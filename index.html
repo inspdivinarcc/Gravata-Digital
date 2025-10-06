@@ -902,7 +902,7 @@
 
         <!-- RESGATAR PRESENTE -->
         <section id="view-resgatar" class="card" hidden>
-            <h2>🎁 Resgatar Presente Digital</h2>
+            <h2>🎁 Resgatar Presente</h2>
             <p class="muted">
                 Se você foi o vencedor do sorteio, insira o código exclusivo recebido via WhatsApp/E-mail.
             </p>
@@ -915,18 +915,34 @@
             </div>
             
             <div id="gift-ui" class="card" style="margin-top: 20px; display: none;">
-                <h3>🎉 Parabéns! Presente Desbloqueado!</h3>
-                <p id="gift-desc" class="muted"></p>
-                <div class="row">
-                    <a id="gift-link" class="btn btn-primary" href="#" target="_blank">
-                        🎁 Acessar Presente
-                    </a>
-                    <button class="btn btn-ghost" onclick="Gift.copyAccess()">
-                        📋 Copiar Link
-                    </button>
+                <h3>🎉 Parabéns! Você Ganhou!</h3>
+                <div class="trophy" style="font-size: 50px; text-align: center; margin: 20px 0;">🏆</div>
+                <p id="gift-desc" class="muted" style="font-size: 18px; text-align: center;"></p>
+                
+                <div id="physical-gift-info" style="display: none;">
+                    <div class="card" style="background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); margin-top: 20px;">
+                        <h4 style="color: #FFD700;">Como receber seu presente:</h4>
+                        <div id="delivery-instructions"></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="Gift.confirmContact()">
+                            📱 Confirmar Contato para Entrega
+                        </button>
+                    </div>
                 </div>
-                <div id="gift-password" class="badge" style="margin-top: 15px; display: none;">
-                    Senha: <strong id="gift-pass-text"></strong>
+                
+                <div id="digital-gift-info" style="display: none;">
+                    <div class="row">
+                        <a id="gift-link" class="btn btn-primary" href="#" target="_blank">
+                            🎁 Acessar Presente
+                        </a>
+                        <button class="btn btn-ghost" onclick="Gift.copyAccess()">
+                            📋 Copiar Link
+                        </button>
+                    </div>
+                    <div id="gift-password" class="badge" style="margin-top: 15px; display: none;">
+                        Senha: <strong id="gift-pass-text"></strong>
+                    </div>
                 </div>
             </div>
         </section>
@@ -942,6 +958,17 @@
                     <button class="btn btn-primary" onclick="Admin.auth()">
                         Entrar
                     </button>
+                </div>
+                <div id="change-password-section" style="display: none; margin-top: 20px;">
+                    <hr class="hr">
+                    <h4 style="color: white; margin-bottom: 15px;">Alterar Senha de Admin</h4>
+                    <div class="row">
+                        <input id="current-pass" class="input" type="password" placeholder="Senha atual" style="flex: 1;">
+                        <input id="new-pass" class="input" type="password" placeholder="Nova senha" style="flex: 1;">
+                        <button class="btn btn-success" onclick="Admin.changePassword()">
+                            Alterar Senha
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -1035,18 +1062,50 @@
                         </div>
 
                         <div class="card" style="margin-top: 20px;">
-                            <h3>🎁 Configurar Presente Digital</h3>
-                            <label class="label">Título do Presente</label>
-                            <input id="gift-title" class="input" placeholder="Ex: Álbum Digital Exclusivo">
+                            <h3>🎁 Configurar Presente do Sorteio</h3>
+                            <label class="label">Tipo de Presente</label>
+                            <select id="gift-type" class="select" onchange="Admin.updateGiftType()">
+                                <option value="physical">Presente Físico (ex: Sanduicheira, Mixer)</option>
+                                <option value="digital">Presente Digital (ex: Álbum, Vídeo)</option>
+                                <option value="voucher">Vale Compras / Cupom</option>
+                            </select>
+                            
+                            <label class="label" style="margin-top: 15px;">Nome do Presente</label>
+                            <input id="gift-title" class="input" placeholder="Ex: Sanduicheira Elétrica Mondial">
                             
                             <label class="label" style="margin-top: 15px;">Descrição</label>
-                            <textarea id="gift-desc-input" class="input" rows="3" placeholder="Descreva o presente digital..."></textarea>
+                            <textarea id="gift-desc-input" class="input" rows="3" placeholder="Ex: Sanduicheira Premium 110V, nova na caixa. Será entregue após o casamento."></textarea>
                             
-                            <label class="label" style="margin-top: 15px;">Link do Presente</label>
-                            <input id="gift-link-input" class="input" placeholder="https://...">
+                            <div id="physical-gift-options" style="display: block;">
+                                <label class="label" style="margin-top: 15px;">Forma de Entrega</label>
+                                <select id="delivery-method" class="select">
+                                    <option value="wedding">Entrega no casamento</option>
+                                    <option value="shipping">Envio por correio/transportadora</option>
+                                    <option value="pickup">Retirada com os noivos</option>
+                                    <option value="online">Compra online com entrega direta</option>
+                                </select>
+                                
+                                <label class="label" style="margin-top: 15px;">Link do Produto (se compra online)</label>
+                                <input id="gift-link-input" class="input" placeholder="https://www.magazineluiza.com.br/sanduicheira...">
+                            </div>
                             
-                            <label class="label" style="margin-top: 15px;">Senha de Acesso (opcional)</label>
-                            <input id="gift-pass-input" class="input" placeholder="Senha para acessar o presente">
+                            <div id="digital-gift-options" style="display: none;">
+                                <label class="label" style="margin-top: 15px;">Link do Presente Digital</label>
+                                <input id="gift-digital-link" class="input" placeholder="https://drive.google.com/...">
+                                
+                                <label class="label" style="margin-top: 15px;">Senha de Acesso (opcional)</label>
+                                <input id="gift-pass-input" class="input" placeholder="Senha para acessar">
+                            </div>
+                            
+                            <div class="card" style="background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); margin-top: 15px;">
+                                <p class="small" style="color: #FFD700; margin: 0;">
+                                    <strong>💡 Dica para Presente Físico:</strong><br>
+                                    1. Compre a sanduicheira em um site confiável<br>
+                                    2. Após o sorteio, envie o link para o vencedor escolher o modelo/cor<br>
+                                    3. Ou entregue pessoalmente no final da festa<br>
+                                    4. Guarde a nota fiscal para garantia
+                                </p>
+                            </div>
                             
                             <div class="row" style="justify-content: flex-end; margin-top: 20px;">
                                 <button class="btn btn-success" onclick="Admin.saveGift()">
@@ -1656,16 +1715,93 @@
             }
             
             // Show gift
-            document.getElementById('gift-desc').textContent = gift.desc || 'Presente digital exclusivo dos noivos';
-            document.getElementById('gift-link').href = gift.link || '#';
+            document.getElementById('gift-desc').textContent = 
+                gift.title || 'Presente especial dos noivos';
             
-            if (gift.pass) {
-                document.getElementById('gift-password').style.display = 'inline-flex';
-                document.getElementById('gift-pass-text').textContent = gift.pass;
+            // Handle different gift types
+            const physicalInfo = document.getElementById('physical-gift-info');
+            const digitalInfo = document.getElementById('digital-gift-info');
+            
+            if (gift.type === 'physical' || gift.type === 'voucher') {
+                physicalInfo.style.display = 'block';
+                digitalInfo.style.display = 'none';
+                
+                // Show delivery instructions based on method
+                const instructions = document.getElementById('delivery-instructions');
+                let instructionText = '';
+                
+                switch(gift.deliveryMethod) {
+                    case 'wedding':
+                        instructionText = `
+                            <p>✅ Seu presente será entregue ainda hoje na festa!</p>
+                            <p>📍 Procure os noivos ou a equipe organizadora.</p>
+                        `;
+                        break;
+                    case 'shipping':
+                        instructionText = `
+                            <p>📦 Seu presente será enviado após o casamento.</p>
+                            <p>📱 Entraremos em contato via WhatsApp para confirmar o endereço.</p>
+                        `;
+                        break;
+                    case 'pickup':
+                        instructionText = `
+                            <p>🤝 Combine com os noivos a melhor data para retirada.</p>
+                            <p>📱 Entraremos em contato em breve.</p>
+                        `;
+                        break;
+                    case 'online':
+                        instructionText = `
+                            <p>🛒 Você poderá escolher seu presente!</p>
+                            <p>💳 Enviaremos um vale-compras ou link para escolha.</p>
+                            <p>📱 Aguarde nosso contato via WhatsApp.</p>
+                        `;
+                        break;
+                    default:
+                        instructionText = `
+                            <p>🎁 Parabéns! Você ganhou: ${gift.desc || 'Um presente especial'}</p>
+                            <p>📱 Entraremos em contato para combinar a entrega.</p>
+                        `;
+                }
+                
+                instructions.innerHTML = instructionText;
+                
+                if (gift.link) {
+                    instructions.innerHTML += `
+                        <div style="margin-top: 15px;">
+                            <a href="${gift.link}" target="_blank" class="btn btn-gold" style="width: 100%;">
+                                🛍️ Ver Produto no Site
+                            </a>
+                        </div>
+                    `;
+                }
+            } else {
+                // Digital gift
+                physicalInfo.style.display = 'none';
+                digitalInfo.style.display = 'block';
+                
+                document.getElementById('gift-link').href = gift.link || '#';
+                
+                if (gift.pass) {
+                    document.getElementById('gift-password').style.display = 'inline-flex';
+                    document.getElementById('gift-pass-text').textContent = gift.pass;
+                }
             }
             
             document.getElementById('gift-ui').style.display = 'block';
-            Utils.showToast('Presente desbloqueado com sucesso! 🎁');
+            Utils.showToast('Presente desbloqueado com sucesso! 🎉');
+        },
+        
+        confirmContact() {
+            const winner = Storage.get(CONFIG.STORAGE_KEYS.WINNER);
+            const event = Storage.get(CONFIG.STORAGE_KEYS.EVENT) || {};
+            
+            if (winner && winner.phone) {
+                const message = `Olá! Confirmando o recebimento do presente do sorteio do casamento de ${event.brideName || 'Angela'} & ${event.groomName || 'Rudnei'}. Por favor, confirme seus dados para entrega.`;
+                const whatsUrl = `https://wa.me/${winner.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+                window.open(whatsUrl, '_blank');
+            }
+            
+            Utils.showToast('Abrindo WhatsApp para confirmar entrega...');
         },
         
         copyAccess() {
@@ -1685,20 +1821,52 @@
         
         checkAuth() {
             const savedPass = Storage.get(CONFIG.STORAGE_KEYS.ADMIN);
-            this.isAuthenticated = savedPass === CONFIG.ADMIN_PASSWORD;
+            // Se não houver senha, usa a padrão
+            if (!savedPass) {
+                Storage.set(CONFIG.STORAGE_KEYS.ADMIN, CONFIG.ADMIN_PASSWORD);
+            }
         },
         
         auth() {
             const pass = document.getElementById('admin-pass').value;
-            if (pass === CONFIG.ADMIN_PASSWORD) {
-                Storage.set(CONFIG.STORAGE_KEYS.ADMIN, pass);
+            const savedPass = Storage.get(CONFIG.STORAGE_KEYS.ADMIN) || CONFIG.ADMIN_PASSWORD;
+            
+            if (pass === savedPass) {
                 this.isAuthenticated = true;
                 this.sync();
                 Utils.showToast('Acesso autorizado!');
                 document.getElementById('admin-pass').value = '';
+                // Mostra seção de mudança de senha
+                document.getElementById('change-password-section').style.display = 'block';
             } else {
                 Utils.showToast('Senha incorreta');
             }
+        },
+        
+        changePassword() {
+            const currentPass = document.getElementById('current-pass').value;
+            const newPass = document.getElementById('new-pass').value;
+            const savedPass = Storage.get(CONFIG.STORAGE_KEYS.ADMIN) || CONFIG.ADMIN_PASSWORD;
+            
+            if (!currentPass || !newPass) {
+                Utils.showToast('Preencha todos os campos');
+                return;
+            }
+            
+            if (currentPass !== savedPass) {
+                Utils.showToast('Senha atual incorreta');
+                return;
+            }
+            
+            if (newPass.length < 4) {
+                Utils.showToast('A nova senha deve ter pelo menos 4 caracteres');
+                return;
+            }
+            
+            Storage.set(CONFIG.STORAGE_KEYS.ADMIN, newPass);
+            Utils.showToast('Senha alterada com sucesso!');
+            document.getElementById('current-pass').value = '';
+            document.getElementById('new-pass').value = '';
         },
         
         sync() {
@@ -1841,16 +2009,35 @@
             Utils.showToast('Configurações de pagamento salvas!');
         },
         
+        updateGiftType() {
+            const giftType = document.getElementById('gift-type').value;
+            const physicalOptions = document.getElementById('physical-gift-options');
+            const digitalOptions = document.getElementById('digital-gift-options');
+            
+            if (giftType === 'physical' || giftType === 'voucher') {
+                physicalOptions.style.display = 'block';
+                digitalOptions.style.display = 'none';
+            } else {
+                physicalOptions.style.display = 'none';
+                digitalOptions.style.display = 'block';
+            }
+        },
+        
         saveGift() {
+            const giftType = document.getElementById('gift-type').value;
             const gift = {
+                type: giftType,
                 title: document.getElementById('gift-title').value,
                 desc: document.getElementById('gift-desc-input').value,
-                link: document.getElementById('gift-link-input').value,
-                pass: document.getElementById('gift-pass-input').value
+                deliveryMethod: document.getElementById('delivery-method')?.value,
+                link: giftType === 'digital' ? 
+                    document.getElementById('gift-digital-link')?.value : 
+                    document.getElementById('gift-link-input').value,
+                pass: document.getElementById('gift-pass-input')?.value
             };
             
             Storage.set(CONFIG.STORAGE_KEYS.GIFT, gift);
-            Utils.showToast('Presente digital configurado!');
+            Utils.showToast('Presente configurado com sucesso!');
         },
         
         scheduleRaffle() {
