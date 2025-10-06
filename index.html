@@ -701,9 +701,9 @@
         <div class="hero-bg"></div>
                     <div class="hero-content">
             <div class="row center" style="justify-content: center;">
-                <span class="badge">💍 <span id="couple-names">Julia & Carlos</span></span>
-                <span class="badge">📅 <span id="wedding-date-display">15/03/2025</span></span>
-                <span class="badge">📍 <span id="wedding-venue-display">Igreja São José • RJ</span></span>
+                <span class="badge">💍 <span id="couple-names">Angela Oliveira de Castilho & Rudnei Costa de Castilho</span></span>
+                <span class="badge">📅 <span id="wedding-date-display">12/10/2025</span></span>
+                <span class="badge">📍 <span id="wedding-venue-display">Paróquia Santo André, Caju - RJ</span></span>
             </div>
             <h1>Gravata Digital Premium</h1>
             <p class="lead">
@@ -712,16 +712,16 @@
             </p>
             <div class="row center" style="justify-content: center;">
                 <button class="btn btn-primary" onclick="App.go('contribuir')">
-                    💝 Contribuir Agora
+                    💝 CONTRIBUIR AGORA
                 </button>
                 <button class="btn btn-gold" onclick="App.go('resgatar')">
-                    🎁 Resgatar Presente
+                    🎁 RESGATAR PRESENTE
                 </button>
                 <button class="btn btn-ghost" onclick="App.go('ranking')">
-                    🏆 Ver Ranking
+                    🏆 VER RANKING
                 </button>
                 <button class="btn btn-muted" onclick="App.go('admin')">
-                    ⚙️ Painel Admin
+                    ⚙️ PAINEL ADMIN
                 </button>
             </div>
             <div class="row center" style="justify-content: center; margin-top: 20px;">
@@ -1234,6 +1234,7 @@
         init() {
             this.initBackground();
             this.loadEventInfo();
+            this.loadDefaultSettings(); // Nova função para carregar configurações padrão
             UI.mountAmounts();
             Admin.checkAuth();
             this.bindEvents();
@@ -1254,13 +1255,52 @@
             }
         },
         
+        loadDefaultSettings() {
+            // Configurações padrão do evento - SEMPRE carrega essas se não houver outras
+            const defaultEvent = {
+                groomName: 'Rudnei Costa de Castilho',
+                brideName: 'Angela Oliveira de Castilho',
+                date: '2025-10-12',
+                time: '18:00',
+                venue: 'Paróquia Santo André, Caju - RJ'
+            };
+            
+            // Configurações padrão de pagamento
+            const defaultPayout = {
+                pix: 'rudneishalom@gmail.com', // Adicione sua chave PIX real aqui
+                bank: '',
+                agency: '',
+                account: '',
+                gateway: 'demo'
+            };
+            
+            // Configurações padrão do presente
+            const defaultGift = {
+                title: 'Álbum Digital Exclusivo do Casamento',
+                desc: 'Acesso antecipado às fotos e vídeos do nosso grande dia, com momentos exclusivos dos bastidores!',
+                link: 'https://drive.google.com/seu-link-aqui', // Adicione seu link real aqui
+                pass: 'AMOR2025'
+            };
+            
+            // Só salva se não existir configuração prévia
+            if (!Storage.get(CONFIG.STORAGE_KEYS.EVENT)) {
+                Storage.set(CONFIG.STORAGE_KEYS.EVENT, defaultEvent);
+            }
+            if (!Storage.get(CONFIG.STORAGE_KEYS.PAYOUT)) {
+                Storage.set(CONFIG.STORAGE_KEYS.PAYOUT, defaultPayout);
+            }
+            if (!Storage.get(CONFIG.STORAGE_KEYS.GIFT)) {
+                Storage.set(CONFIG.STORAGE_KEYS.GIFT, defaultGift);
+            }
+        },
+        
         loadEventInfo() {
             const event = Storage.get(CONFIG.STORAGE_KEYS.EVENT) || {
-                groomName: 'Carlos',
-                brideName: 'Julia',
-                date: '2025-03-15',
+                groomName: 'Rudnei Costa de Castilho',
+                brideName: 'Angela Oliveira de Castilho',
+                date: '2025-10-12',
                 time: '18:00',
-                venue: 'Igreja São José • RJ'
+                venue: 'Paróquia Santo André, Caju - RJ'
             };
             
             // Update display
